@@ -1,42 +1,45 @@
 package main
 
 import (
-	"encoding/json"
-
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	roledeploy "github.com/the0xsec/pulumi-apps/iam-manager/iamrole"
 )
+
+type role struct {
+	roleName string
+	serviceName string
+	permissionSet string
+}
+
+var roles = []role{
+	{
+		roleName:      "lambda-admin",
+		serviceName:   "lambda.amazonaws.com",
+		permissionSet: "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
+	},
+	{
+		roleName:      "s3-admin",
+		serviceName:   "s3.amazonaws.com",
+		permissionSet: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+	},
+	{
+		roleName:      "ec2-admin",
+		serviceName:   "ec2.amazonaws.com",
+		permissionSet: "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+	},
+}
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		ec2Assume, err := json.Marshal(map[string]interface{}{
-			"Version": "2012-10-17",
-            "Statement": []interface{}{
-                map[string]interface{}{
-                    "Effect": "Allow",
-                    "Principal": map[string]interface{}{
-                        "Service": "ec2.amazonaws.com",
-                    },
-                    "Action": "sts:AssumeRole",
-                },
-            },
-		})
-		if err != nil {
-			return err
+		for _, role := range roles {
+			_, err := roledeploy.CreateRole(ctx, role.roleName, role.serviceName, role.permissionSet)
+			if err != nil {
+				return err
+			}
+
+			ctx.Export(role.roleName, pulumi.String("Role created"))
 		}
-
-		json0 := string(ec2Assume)
-		_, err = iam.NewRole(ctx, "api-gateway-admin", &iam.RoleArgs{
-			Name:             pulumi.String("api-gateway-admin"),
-			AssumeRolePolicy: pulumi.String(json0),
-			Tags: pulumi.StringMap{
-				"iam-manager": pulumi.String("pulumi-stacked"),
-			},
-		})
-		if err!= nil {
-            return err
-        }
-
+		
 		return nil
 	})
 }
