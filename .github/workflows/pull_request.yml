@@ -1,6 +1,8 @@
 name: Pulumi
 on:
-  - pull_request
+  push:
+    branches:
+      - main
 jobs:
   preview:
     name: Preview
