@@ -1,2 +1,7 @@
 config:
+  aws:accessKey: AKIAQ3EGSS27E52L5KFE
+  aws:assumeRole:
+    roleArn: arn:aws:iam::058264295102:role/IAM-Administrator
   aws:region: us-east-1
+  aws:secretKey:
+    secure: AAABACh6/N9mMoeK+ageuN5+TenIXGr3gZxtmThTwx2caySU6d+Zn1CmDbt9zhdvVzXvqDEfBg6gpKzzgsLyYc60XUDrSSja
