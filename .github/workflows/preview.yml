@@ -21,7 +21,7 @@ jobs:
         - run: | 
             go mod download
             go mod tidy
-            cd iam-manager
+            pwd
           working-directory: iam-manager
         - uses: pulumi/actions@v3
           with:
