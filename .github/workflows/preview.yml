@@ -23,7 +23,7 @@ jobs:
         - uses: pulumi/actions@v3
           with:
             command: preview
-            stack-name: dev
+            stack-name: the0x/iam-manager/dev
           env:
             PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
             working-directory: iam-manager
