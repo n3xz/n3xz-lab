@@ -1,7 +1,0 @@
-name: iam-manager
-runtime: go
-description: A IaC manager for handling user provisioning
-config:
-  pulumi:tags:
-    value:
-      pulumi:template: ""

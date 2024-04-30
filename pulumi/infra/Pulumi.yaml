@@ -1,7 +1,0 @@
-name: hive-net-infra
-runtime: go
-description: Non Default VPC Configuration
-config:
-  pulumi:tags:
-    value:
-      pulumi:template: aws-go
