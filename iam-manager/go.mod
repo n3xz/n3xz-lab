@@ -1,4 +1,4 @@
-module the0x__labs
+module iam-manager
 
 go 1.21
 

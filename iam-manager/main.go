@@ -1,35 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"go/ast"
-	"go/parser"
-	"go/token"
-	"log"
-
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/s3"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		fset := token.NewFileSet()
-		node, err := parser.ParseFile(fset, "../static-site/main.go", nil, 0)
+		// Create an AWS resource (S3 Bucket)
+		bucket, err := s3.NewBucket(ctx, "my-bucket", nil)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
-		
-		mapOfAwsCalls := make(map[string]string)
-		ast.Inspect(node, func(n ast.Node) bool {
-			switch x := n.(type) {
-			case *ast.SelectorExpr:
-				if x.X.(*ast.Ident).Name == "s3" {
-					log.Println("Found pulumi code that uses the aws sdk")
-					mapOfAwsCalls[x.Sel.Name] = x.X.(*ast.Ident).Name
-				}
-			}
-			return true
-		})
-		fmt.Println(mapOfAwsCalls)
+
+		// Export the name of the bucket
+		ctx.Export("bucketName", bucket.ID())
 		return nil
 	})
 }

@@ -1,4 +1,4 @@
-name: the0x__labs
+name: iam-manager
 runtime: go
 description: A minimal AWS Go Pulumi program
 config:
