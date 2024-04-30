@@ -30,5 +30,7 @@ func main() {
 			return true
 		})
 		fmt.Println(mapOfAwsCalls)
+
+		return nil
 	})
 }
