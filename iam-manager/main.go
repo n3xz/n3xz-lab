@@ -13,7 +13,7 @@ import (
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		fset := token.NewFileSet()
-		node, err := parser.ParseFile(fset, "../infra/main.go", nil, 0)
+		node, err := parser.ParseFile(fset, "../static-site/main.go", nil, 0)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -30,7 +30,6 @@ func main() {
 			return true
 		})
 		fmt.Println(mapOfAwsCalls)
-
 		return nil
 	})
 }

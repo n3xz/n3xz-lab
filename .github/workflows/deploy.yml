@@ -1,8 +1,10 @@
-name: Pulumi
+name: Deploy Infra
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Evaluate Infra"]
+    types:
+      - completed
+
 jobs:
   preview:
     name: Preview
@@ -19,9 +21,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - run: go mod download
+        working-directory: static-site
       - uses: pulumi/actions@v3
         with:
           command: preview
-          stack-name: the0x/dev
+          stack-name: the0x/cicd-dev
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          working-directory: static-site
