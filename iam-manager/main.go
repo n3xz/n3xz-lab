@@ -1,57 +1,35 @@
 package main
 
 import (
-	"encoding/json"
-	"go/ast"
-	"go/parser"
-	"go/token"
-	"log"
-
-	"github.com/pulumi/pulumi-aws/sdk/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumiverse/pulumi-doppler/sdk/go/doppler"
 )
 
+
+
 func main() {
-	pulumi.Run(func(ctx *pulumi.Context) error{
-		fset := token.NewFileSet()
-		node, err := parser.ParseFile(fset, "../static-site/main.go", nil, 0)
-		if err != nil {
-			log.Fatal(err)
-		}
-		
-		mapOfAwsCalls := make(map[string]string)
-		ast.Inspect(node, func(n ast.Node) bool {
-			switch x := n.(type) {
-			case *ast.SelectorExpr:
-				if x.X.(*ast.Ident).Name == "s3" {
-					log.Println("Found pulumi code that uses the aws sdk")
-					mapOfAwsCalls[x.Sel.Name] = x.X.(*ast.Ident).Name
 
-					tmpJSON0, err := json.Marshal(map[string]interface{}{
-						"Version": "2012-10-17",
-						"Statement": []map[string]interface{}{
-							map[string]interface{}{
-								"Action": []string{
-									"ec2:Describe*",
-								},
-								"Effect":   "Allow",
-								"Resource": "*",
-							},
-						},
-					})
-					if err != nil {
-						log.Fatal(err)
-					}
+	pulumi.Run(func(ctx *pulumi.Context) error {
 
-					_, err = iam.NewRolePolicy(ctx, "s3Policy", &iam.RolePolicyArgs{
-						Policy: pulumi.String(tmpJSON0),
-						Role:   pulumi.Any(aws_iam_role.Example.Arn),
-						
-				}
-			}
-			
-			return true
+		project := string(pulumi.String("iam-manager"))
+		config := string(pulumi.String("dev"))
+
+		credentials, err := doppler.GetSecrets(ctx, &doppler.GetSecretsArgs{
+			Project: &project,
+			Config:  &config,
 		})
+		if err != nil {
+			return err
+		}
+
+		for key, value := range credentials.Map {
+			if key != "AWS_SECRET_ACCESS_KEY" {
+				ctx.Export(key, pulumi.String(value))
+			} else {
+				ctx.Export(key, pulumi.String("********"))
+			}
+		}
+
 		return nil
 	})
 }
