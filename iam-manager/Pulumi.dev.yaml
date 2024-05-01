@@ -1,1 +1,4 @@
-{config: {'doppler:dopplerToken': {secure: AAABADeI8IoPa9yKa6q1C46eDRG6JMuAcjmp3qqb8ub0qlJfXNIDmnBTFsNc3CAjqpZjBxVMMgPmyJANrlBb6luHwpovDGiaHoHXsOi/bd2SVkce4w==}}}
+config:
+  aws:region: us-east-1
+  doppler:dopplerToken:
+    secure: AAABAFshJC6f8I+pLrqPNBlIdVxsTk7TcZbmiFP12VEA6L2AJE8+ELaUmaw5fZu5h6e+9+LPdjiDxIu/GBnkC9JTNeG5/4sQ/9BoXYYBWl4CDenm1A==
