@@ -1,6 +1,8 @@
 package main
 
 import (
+	iamAnalyzer "iam-manager/iam-analyzer"
+
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -41,11 +43,26 @@ func main() {
 			return err
 		}
 
-		user, errp := iam.NewUser(ctx, "my-user", &iam.UserArgs{
+		permissions, err := iamAnalyzer.AnalyzePermissions("path/to/file.go")
+		if err != nil {
+			return err
+		}
+
+		user, err := iam.NewUser(ctx, "user", &iam.UserArgs{
 			Path: pulumi.String("/"),
 		}, pulumi.Provider(provider))
-		if errp != nil {
-			return errp
+		if err != nil {
+			return err
+		}
+
+		for permission := range permissions {
+			_, err := iam.NewUserPolicyAttachment(ctx, permission, &iam.UserPolicyAttachmentArgs{
+				PolicyArn: pulumi.String(permission),
+				User:      user.Name,
+			}, pulumi.Provider(provider))
+			if err != nil {
+				return err
+			}
 		}
 
 		ctx.Export("user-name", user.Name)
