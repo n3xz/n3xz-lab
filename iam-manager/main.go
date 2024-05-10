@@ -1,7 +1,7 @@
 package main
 
 import (
-	iamAnalyzer "iam-manager/iam-analyzer"
+	"fmt"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
@@ -22,9 +22,16 @@ func credGrabber(ctx *pulumi.Context) map[string]string  {
 		return nil
 	}
 
+	fmt.Println("AWS_ACCESS_KEY_ID: ", "********")
+	fmt.Println("AWS_SECRET_ACCESS_KEY: ", "********")
 	return credentials.Map
 }
 
+func errChk(err error) {
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
@@ -39,33 +46,40 @@ func main() {
 			AccessKey: pulumi.String(creds["AWS_ACCESS_KEY_ID"]),
 			SecretKey: pulumi.String(creds["AWS_SECRET_ACCESS_KEY"]),
 		})
-		if err != nil {
-			return err
-		}
+		errChk(err)
 
-		permissions, err := iamAnalyzer.AnalyzePermissions("path/to/file.go")
-		if err != nil {
-			return err
-		}
-
-		user, err := iam.NewUser(ctx, "user", &iam.UserArgs{
+		user, err := iam.NewUser(ctx, "bedrock-user", &iam.UserArgs{
 			Path: pulumi.String("/"),
 		}, pulumi.Provider(provider))
-		if err != nil {
-			return err
-		}
+		errChk(err)
 
-		for permission := range permissions {
-			_, err := iam.NewUserPolicyAttachment(ctx, permission, &iam.UserPolicyAttachmentArgs{
-				PolicyArn: pulumi.String(permission),
-				User:      user.Name,
-			}, pulumi.Provider(provider))
-			if err != nil {
-				return err
-			}
-		}
+		accessKey, err := iam.NewAccessKey(ctx, "bedrock-access-key", &iam.AccessKeyArgs{
+			User: user.Name,
+		}, pulumi.Provider(provider))
+		errChk(err)
 
-		ctx.Export("user-name", user.Name)
+		_, err = doppler.NewSecret(ctx, "bedrock-secret-key", &doppler.SecretArgs{
+			Project: pulumi.String("iam-manager"),
+			Config:  pulumi.String("dev"),
+			Value:   accessKey.Secret,
+		})
+
+		_, err = doppler.NewSecret(ctx, "bedrock-access-key", &doppler.SecretArgs{
+			Project: pulumi.String("iam-manager"),
+			Config:  pulumi.String("dev"),
+			Value:   accessKey.ID(),
+		})
+
+		_, err = doppler.NewServiceToken(ctx, "bedrock-service-token", &doppler.ServiceTokenArgs{
+			Project: pulumi.String("iam-manager"),
+			Config:  pulumi.String("dev"),
+			Access:  pulumi.String("read"),
+			Name:    pulumi.String("bedrock-service-token"),
+		})
+
+		ctx.Export("AccessKey:", accessKey.ID())
+		ctx.Export("SecretKey:", accessKey.Secret)
+		ctx.Export("UserName:", user.Name)
 		return nil
 	})
 }
