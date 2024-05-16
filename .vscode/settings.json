@@ -1,0 +1,5 @@
+{
+    "gopls": {},
+    "json.indent": "4",
+    "go.formatTool": "gofmt"
+}
