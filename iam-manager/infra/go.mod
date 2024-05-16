@@ -5,8 +5,7 @@ go 1.21
 toolchain go1.22.2
 
 require (
-	github.com/pulumi/pulumi-aws/sdk/v6 v6.30.0
-	github.com/pulumi/pulumi/pkg/v2 v2.25.2
+	github.com/pulumi/pulumi-aws/sdk/v6 v6.36.0
 	github.com/pulumi/pulumi/sdk/v3 v3.115.2
 )
 
@@ -174,8 +173,11 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.6.2 // indirect
+	github.com/pulumi/pulumi-aws/sdk v1.31.0 // indirect
 	github.com/pulumi/pulumi/pkg/v3 v3.115.2 // indirect
+	github.com/pulumi/pulumi/sdk v1.13.1 // indirect
 	github.com/pulumi/pulumi/sdk/v2 v2.25.2 // indirect
+	github.com/pulumiverse/pulumi-doppler/sdk v0.7.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
@@ -227,7 +229,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240311173647-c811ad7063a7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7 // indirect
 	google.golang.org/grpc v1.63.2 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.34.0 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.9-0.20200217094205-6773bdf39b7f // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
